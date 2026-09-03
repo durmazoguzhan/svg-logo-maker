@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Constant gap, shrinking square: the gap is the system's fixed term (16)
+       and the size is what varies, at a steady 1.6 ratio. Equal gaps here mean
+       equal, which is what invariant 4 asks for. Corner radius is 0.22 of the
+       side on all three, so they stay one family. -->
+  <g id="icon" fill="#18181b" fill-rule="evenodd">
+    <path d="M48 90a42 42 0 0 1 42-42h108a42 42 0 0 1 42 42v108a42 42 0 0 1-42 42H90a42 42 0 0 1-42-42z
+             M108 124v40a16 16 0 0 0 16 16h40a16 16 0 0 0 16-16v-40a16 16 0 0 0-16-16h-40a16 16 0 0 0-16 16z"/>
+    <rect x="256" y="256" width="120" height="120" rx="26"/>
+    <rect x="392" y="392" width="72" height="72" rx="16"/>
+  </g>
+</svg>

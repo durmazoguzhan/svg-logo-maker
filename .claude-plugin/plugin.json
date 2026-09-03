@@ -1,0 +1,13 @@
+{
+  "name": "svg-logo-maker",
+  "version": "0.1.0",
+  "description": "Design logos as hand-written SVG and deliver a complete asset set: colour variants, favicons, .ico, and a print handoff with text converted to paths. No API keys.",
+  "author": {
+    "name": "Oguzhan Durmaz",
+    "url": "https://github.com/durmazoguzhan"
+  },
+  "homepage": "https://github.com/durmazoguzhan/svg-logo-maker",
+  "repository": "https://github.com/durmazoguzhan/svg-logo-maker",
+  "license": "MIT",
+  "keywords": ["logo", "svg", "branding", "icon", "favicon", "wordmark", "print", "cmyk", "vector"]
+}

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>svg-logo-maker · concepts</title>
+<style>
+  :root { --bg:#f4f4f5; --fg:#18181b; --card:#fff; --line:#d4d4d8; --muted:#71717a; }
+  body.dark { --bg:#0b0b0d; --fg:#e4e4e7; --card:#18181b; --line:#3f3f46; --muted:#a1a1aa; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--bg); color:var(--fg); font:15px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+         padding:2rem; transition:background .2s,color .2s; }
+  header { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:.5rem; }
+  h1 { font-size:1.35rem; font-weight:650; }
+  h2 { font-size:.95rem; font-weight:600; margin:2.5rem 0 .35rem; }
+  p.note { color:var(--muted); font-size:.85rem; margin-bottom:1rem; max-width:60ch; }
+  button { background:transparent; color:inherit; border:1px solid var(--line); border-radius:6px;
+            padding:.4rem .8rem; cursor:pointer; font:inherit; font-size:.85rem; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:1.1rem; }
+  .card { border:1px solid var(--line); border-radius:10px; overflow:hidden; background:var(--card); }
+  .art { display:flex; align-items:center; justify-content:center; padding:1.6rem; min-height:190px; }
+  .art img { max-width:100%; max-height:150px; }
+  .art.light { background:#fff; }
+  .art.dark { background:#101820; }
+  .label { padding:.5rem .75rem; font-size:.8rem; color:var(--muted); border-top:1px solid var(--line);
+            font-family:ui-monospace,SFMono-Regular,Menlo,monospace; }
+  .strip { display:flex; flex-wrap:wrap; gap:2rem; align-items:flex-end;
+            border:1px solid var(--line); border-radius:10px; padding:1.2rem; background:#fff; }
+  .strip .set { display:flex; flex-direction:column; align-items:center; gap:.5rem; }
+  .strip .row { display:flex; gap:1rem; align-items:flex-end; }
+  .strip figcaption { font-size:.7rem; color:#71717a; text-align:center; }
+  .strip .name { font-size:.75rem; font-family:ui-monospace,monospace; color:#71717a; }
+</style></head>
+<body class="light">
+<header>
+  <h1>svg-logo-maker · concepts</h1>
+  <button onclick="document.body.classList.toggle('dark');this.textContent=document.body.classList.contains('dark')?'Light':'Dark'">Dark</button>
+</header>
+<h2>Concepts on light</h2>
+<div class="grid"><div class="card"><div class="art light"><img src="logos/concepts/concept-1.svg" alt="concept-1"></div><div class="label">concept-1</div></div><div class="card"><div class="art light"><img src="logos/concepts/concept-2.svg" alt="concept-2"></div><div class="label">concept-2</div></div><div class="card"><div class="art light"><img src="logos/concepts/concept-3.svg" alt="concept-3"></div><div class="label">concept-3</div></div></div>
+<h2>Concepts on dark</h2>
+<div class="grid"><div class="card"><div class="art dark"><img src="logos/concepts/concept-1.svg" alt="concept-1"></div><div class="label">concept-1</div></div><div class="card"><div class="art dark"><img src="logos/concepts/concept-2.svg" alt="concept-2"></div><div class="label">concept-2</div></div><div class="card"><div class="art dark"><img src="logos/concepts/concept-3.svg" alt="concept-3"></div><div class="label">concept-3</div></div></div>
+<h2>One colour, dark ink on white</h2>
+<p class="note">This is what a single-plate print, an engraving and a favicon at 16px all get. A mark that only works in colour fails here first.</p>
+<div class="grid"><div class="card"><div class="art light"><img src="logos/concepts/_mono/concept-1-mono-dark.svg" alt="concept-1 · mono-dark"></div><div class="label">concept-1 · mono-dark</div></div><div class="card"><div class="art light"><img src="logos/concepts/_mono/concept-2-mono-dark.svg" alt="concept-2 · mono-dark"></div><div class="label">concept-2 · mono-dark</div></div><div class="card"><div class="art light"><img src="logos/concepts/_mono/concept-3-mono-dark.svg" alt="concept-3 · mono-dark"></div><div class="label">concept-3 · mono-dark</div></div></div>
+<h2>One colour, reversed on dark</h2>
+<p class="note">Invisible on white is correct for this variant. Check it against the darkest surface the brand actually uses.</p>
+<div class="grid"><div class="card"><div class="art dark"><img src="logos/concepts/_mono/concept-1-mono-light.svg" alt="concept-1 · mono-light"></div><div class="label">concept-1 · mono-light</div></div><div class="card"><div class="art dark"><img src="logos/concepts/_mono/concept-2-mono-light.svg" alt="concept-2 · mono-light"></div><div class="label">concept-2 · mono-light</div></div><div class="card"><div class="art dark"><img src="logos/concepts/_mono/concept-3-mono-light.svg" alt="concept-3 · mono-light"></div><div class="label">concept-3 · mono-light</div></div></div>
+<h2>Favicon strip</h2>
+<p class="note">If a detail disappears at 32px it is not a detail, it is noise. For a combination mark, run icon-extract.py first and strip the square icon, not the horizontal lockup.</p>
+<div class="strip"><div class="set"><div class="row"><figure><img src="logos/concepts/concept-1.svg" width="64" height="64"><figcaption>64px</figcaption></figure><figure><img src="logos/concepts/concept-1.svg" width="32" height="32"><figcaption>32px</figcaption></figure><figure><img src="logos/concepts/concept-1.svg" width="16" height="16"><figcaption>16px</figcaption></figure></div><div class="name">concept-1</div></div><div class="set"><div class="row"><figure><img src="logos/concepts/concept-2.svg" width="64" height="64"><figcaption>64px</figcaption></figure><figure><img src="logos/concepts/concept-2.svg" width="32" height="32"><figcaption>32px</figcaption></figure><figure><img src="logos/concepts/concept-2.svg" width="16" height="16"><figcaption>16px</figcaption></figure></div><div class="name">concept-2</div></div><div class="set"><div class="row"><figure><img src="logos/concepts/concept-3.svg" width="64" height="64"><figcaption>64px</figcaption></figure><figure><img src="logos/concepts/concept-3.svg" width="32" height="32"><figcaption>32px</figcaption></figure><figure><img src="logos/concepts/concept-3.svg" width="16" height="16"><figcaption>16px</figcaption></figure></div><div class="name">concept-3</div></div></div>
+</body></html>

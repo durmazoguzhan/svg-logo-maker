@@ -1,0 +1,57 @@
+name: validate
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install the toolchain the scripts degrade around
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends inkscape imagemagick fontconfig
+          curl -sL -o /tmp/resvg.tar.gz \
+            https://github.com/linebender/resvg/releases/download/v0.48.1/resvg-linux-x86_64.tar.gz
+          tar xzf /tmp/resvg.tar.gz -C /tmp
+          sudo install -m755 /tmp/resvg /usr/local/bin/resvg
+
+      - name: Shell scripts parse
+        run: for f in skills/svg-logo-maker/scripts/*.sh; do bash -n "$f"; done
+
+      - name: Python scripts compile
+        run: |
+          for f in skills/svg-logo-maker/scripts/*.py; do
+            python3 -c "import sys; compile(open(sys.argv[1]).read(), sys.argv[1], 'exec')" "$f"
+          done
+
+      - name: Every skill file the SKILL.md references exists
+        run: |
+          cd skills/svg-logo-maker
+          grep -oE '(references|scripts)/[A-Za-z0-9._-]+' SKILL.md | sort -u > /tmp/refs
+          while read -r path; do
+            test -e "$path" || { echo "SKILL.md references a missing path: $path"; exit 1; }
+          done < /tmp/refs
+
+      - name: The example logo still passes its own linter
+        run: |
+          python3 skills/svg-logo-maker/scripts/check.py \
+            examples/self/logos/final-icon.svg \
+            examples/self/logos/concepts/*.svg
+
+      - name: The delivery pipeline runs end to end
+        run: |
+          S=skills/svg-logo-maker/scripts
+          out=$(mktemp -d)
+          python3 $S/variants.py     examples/self/logos/final.svg "$out/digital" --bg
+          python3 $S/icon-extract.py examples/self/logos/final.svg "$out/digital/icon.svg"
+          bash    $S/render.sh       "$out/digital/icon.svg" "$out/digital" 16 32 512
+          bash    $S/ico.sh          "$out/digital/icon.svg" "$out/digital/favicon.ico"
+          bash    $S/outline.sh      examples/self/logos/final.svg "$out/outlined.svg"
+          bash    $S/legibility.sh   examples/self/logos/final-icon.svg
+          python3 $S/preview.py      examples/self/logos/concepts --out "$out/preview.html"
+          test -s "$out/digital/favicon.ico"
+          test "$(grep -c '<text' "$out/outlined.svg")" -eq 0

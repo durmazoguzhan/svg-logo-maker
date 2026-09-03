@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1072 512">
+  
+  <g id="icon" fill="#000000" fill-rule="evenodd">
+    
+    <path d="M48 90a42 42 0 0 1 42-42h108a42 42 0 0 1 42 42v108a42 42 0 0 1-42 42H90a42 42 0 0 1-42-42z              M108 124v40a16 16 0 0 0 16 16h40a16 16 0 0 0 16-16v-40a16 16 0 0 0-16-16h-40a16 16 0 0 0-16 16z" />
+    <rect x="256" y="256" width="120" height="120" rx="26" />
+    <rect x="392" y="392" width="72" height="72" rx="16" />
+  </g>
+  <g id="wordmark">
+    
+    <text x="520" y="280" font-family="DejaVu Sans, Verdana, sans-serif" font-size="90" font-weight="700" letter-spacing="-4" fill="#000000">logomaker</text>
+  </g>
+</svg>
