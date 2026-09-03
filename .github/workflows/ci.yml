@@ -1,0 +1,150 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Everything the scripts degrade around. Installing all of it here is
+      # deliberate: the degradation paths are what a developer machine never
+      # exercises, so CI has to run the full-capability path at least.
+      - name: Install the toolchain
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends inkscape imagemagick fontconfig
+          curl -sL -o /tmp/resvg.tar.gz \
+            https://github.com/linebender/resvg/releases/download/v0.48.1/resvg-linux-x86_64.tar.gz
+          tar xzf /tmp/resvg.tar.gz -C /tmp
+          sudo install -m755 /tmp/resvg /usr/local/bin/resvg
+
+      - name: Repository layout the plugin loader expects
+        run: ./scripts/check-structure.sh
+
+      - name: Shell scripts parse
+        run: for f in skills/svg-logo-maker/scripts/*.sh scripts/*.sh; do bash -n "$f"; done
+
+      - name: Python scripts compile
+        run: |
+          for f in skills/svg-logo-maker/scripts/*.py; do
+            python3 -c "import sys; compile(open(sys.argv[1]).read(), sys.argv[1], 'exec')" "$f"
+          done
+
+      - name: Every path SKILL.md references exists
+        run: |
+          cd skills/svg-logo-maker
+          grep -oE '(references|scripts)/[A-Za-z0-9._-]+' SKILL.md | sort -u > /tmp/refs
+          while read -r path; do
+            test -e "$path" || { echo "SKILL.md references a missing path: $path"; exit 1; }
+          done < /tmp/refs
+
+      - name: The example logo passes its own linter
+        run: |
+          python3 skills/svg-logo-maker/scripts/check.py \
+            examples/self/logos/final-icon.svg \
+            examples/self/logos/concepts/*.svg
+
+      - name: The delivery pipeline runs end to end
+        run: |
+          S=skills/svg-logo-maker/scripts
+          out=$(mktemp -d)
+          python3 $S/variants.py     examples/self/logos/final.svg "$out/digital" --bg
+          python3 $S/icon-extract.py examples/self/logos/final.svg "$out/digital/icon.svg"
+          bash    $S/render.sh       "$out/digital/icon.svg" "$out/digital" 16 32 512
+          bash    $S/ico.sh          "$out/digital/icon.svg" "$out/digital/favicon.ico"
+          bash    $S/outline.sh      examples/self/logos/final.svg "$out/outlined.svg"
+          bash    $S/legibility.sh   examples/self/logos/final-icon.svg
+          bash    $S/print.sh        examples/self/logos/final.svg "$out/print"
+          python3 $S/preview.py      examples/self/logos/concepts --out "$out/preview.html"
+          test -s "$out/digital/favicon.ico"
+          test -s "$out/print/final.pdf"
+          test "$(grep -c '<text' "$out/outlined.svg")" -eq 0
+
+      # On main the version is fully determined: it is the commit count in
+      # WendtVer form, so it can be recomputed and compared exactly.
+      - name: Version matches the commit count
+        if: github.event_name == 'push'
+        run: ./scripts/version.sh --check
+
+      # On a pull request HEAD is a synthetic merge commit, so HEAD's own count
+      # is not meaningful. What is determined is the landing count: squash is
+      # the only merge method this repository allows, so every pull request adds
+      # exactly one commit to the base branch however many it carries.
+      #
+      # This checks for equality rather than for "moved forward". A branch of
+      # four commits whose author computed the version from its own HEAD passes
+      # a moved-forward test with a bump of four, and then fails the push gate
+      # on main after the merge, when there is nothing cheap left to fix.
+      - name: Version bumped by exactly one
+        if: github.event_name == 'pull_request'
+        env:
+          BASE: ${{ github.base_ref }}
+        run: |
+          set -euo pipefail
+          read_version() { python3 -c "import json,sys;print(json.load(sys.stdin).get('version',''))"; }
+          encode() { printf '%d.%d.%d' "$(( $1 / 100 ))" "$(( ($1 / 10) % 10 ))" "$(( $1 % 10 ))"; }
+
+          git fetch --no-tags --quiet origin "$BASE"
+
+          base_count=$(git rev-list --count FETCH_HEAD)
+          want=$(encode "$(( base_count + 1 ))")
+
+          base=$(git show "FETCH_HEAD:.claude-plugin/plugin.json" | read_version)
+          head=$(read_version < .claude-plugin/plugin.json)
+
+          printf 'base %s (%s commits) -> head %s; squashed landing count %s\n' \
+            "${base:-<unset>}" "$base_count" "${head:-<unset>}" "$(( base_count + 1 ))"
+
+          if ! printf '%s' "$head" | grep -qE '^[0-9]+\.[0-9]\.[0-9]$'; then
+            echo "FAIL version '$head' is not WendtVer (MAJOR.MINOR.PATCH, MINOR and PATCH single digits)" >&2
+            echo "     see scripts/version.sh and https://wendtver.org" >&2
+            exit 1
+          fi
+
+          if [ "$head" != "$want" ]; then
+            echo "FAIL version is $head; a squash merge onto $BASE makes $base_count + 1 commits, which is $want" >&2
+            echo "     run: scripts/version.sh --write" >&2
+            echo "     one pull request lands as one commit, so it carries exactly one PATCH" >&2
+            exit 1
+          fi
+
+          echo "ok   version $head is $BASE + 1 squashed commit"
+
+  # A merge to main is a release. The tag is the version, which is the commit
+  # count, so nothing here is decided by hand either.
+  release:
+    needs: check
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Tag and release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          version=$(python3 -c "import json;print(json.load(open('.claude-plugin/plugin.json'))['version'])")
+          tag="v$version"
+
+          if git rev-parse "$tag" >/dev/null 2>&1; then
+            echo "ok   $tag already exists, nothing to release"
+            exit 0
+          fi
+
+          git tag "$tag"
+          git push origin "$tag"
+          gh release create "$tag" --title "$tag" --generate-notes
+          echo "ok   released $tag"

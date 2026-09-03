@@ -1,19 +1,22 @@
 {
-  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "durmazoguzhan-svg-logo-maker",
-  "version": "0.1.0",
-  "description": "Logo design skill that produces editable SVG and a print-ready handoff without any paid API",
+  "name": "durmazoguzhan-design",
   "owner": {
     "name": "Oguzhan Durmaz",
     "url": "https://github.com/durmazoguzhan"
   },
+  "description": "Design skills that produce editable vector output and no vendor lock-in",
   "plugins": [
     {
       "name": "svg-logo-maker",
       "source": "./",
       "description": "Design logos as hand-written SVG and deliver colour variants, favicons, .ico and a print handoff with text outlined",
-      "version": "0.1.0",
-      "category": "design"
+      "author": {
+        "name": "Oguzhan Durmaz"
+      },
+      "homepage": "https://github.com/durmazoguzhan/svg-logo-maker",
+      "license": "MIT",
+      "category": "design",
+      "tags": ["logo", "svg", "branding", "favicon", "print"]
     }
   ]
 }

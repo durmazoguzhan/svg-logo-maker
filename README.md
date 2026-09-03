@@ -60,27 +60,84 @@ push every brand toward the same minimal-geometric house style.
 
 ## Install
 
-```bash
+### As a plugin (recommended)
+
+Two commands in Claude Code. The first registers this repository as a
+marketplace, the second installs the plugin from it.
+
+```
 /plugin marketplace add durmazoguzhan/svg-logo-maker
-/plugin install svg-logo-maker
+/plugin install svg-logo-maker@durmazoguzhan-design
 ```
 
-Or copy `skills/svg-logo-maker/` into `.claude/skills/` in any project.
+Then start a new session and ask for a logo. The skill triggers on phrases like
+*"design a logo for this repo"*, *"make me a favicon"*, *"I need a wordmark"*.
 
-Then just ask: *"design a logo for this repo"*.
+Updates arrive when the version in `.claude-plugin/plugin.json` changes, which
+happens on every merge, because the version is the commit count. To pull one:
+
+```
+/plugin marketplace update durmazoguzhan-design
+```
+
+### As a plain skill
+
+If you would rather not install a plugin, copy the skill directory into any
+project:
+
+```bash
+git clone https://github.com/durmazoguzhan/svg-logo-maker /tmp/slm
+mkdir -p .claude/skills
+cp -r /tmp/slm/skills/svg-logo-maker .claude/skills/
+```
+
+It works the same way. You lose only the update path.
+
+### Reading it before you install
+
+It is plain text and short: `skills/svg-logo-maker/SKILL.md` is the whole
+workflow in about 230 lines, `references/00-invariants.md` is the design
+doctrine, and the longest script is under 200 lines. A skill is instructions
+your assistant will follow and this one also ships scripts it will offer to
+run, so reading first is reasonable. See [`SECURITY.md`](SECURITY.md).
+
+### Then the tools it drives
+
+None are mandatory, but see [Tools](#tools) below: with none of them installed
+you get SVG files and nothing rendered.
 
 ## Tools
 
-Nothing is mandatory. The scripts detect what exists and say what is missing.
+The scripts detect what exists and say what a missing one costs.
 
-| Tool | Gives you | Install |
+| Tool | Gives you | Without it |
 |---|---|---|
-| **resvg** | PNG rendering (lightest option) | one 4.6 MB binary from [releases](https://github.com/linebender/resvg/releases) |
-| **Inkscape** | text-to-path, PDF, EPS, icon extraction | `apt install inkscape` · `brew install inkscape` |
-| **ImageMagick** | `.ico`, the legibility measurements | `apt install imagemagick` · `brew install imagemagick` |
-| **fontconfig** | the font-substitution audit | usually already present on Linux |
+| **resvg** | PNG rendering, and the safest renderer here: no script execution, no external resource loading | falls through to Inkscape, then librsvg, then ImageMagick |
+| **Inkscape** | text-to-path, PDF, EPS, icon extraction | those four refuse and say why, rather than shipping live text to a printer |
+| **ImageMagick** | `.ico`, and the legibility measurements | those two features only |
+| **fontconfig** | the font-substitution audit | outlining proceeds unaudited |
 
-Install resvg and Inkscape and everything works.
+Debian or Ubuntu:
+
+```bash
+sudo apt-get install -y inkscape imagemagick
+curl -sL https://github.com/linebender/resvg/releases/latest/download/resvg-linux-x86_64.tar.gz \
+  | tar xz -C /tmp && sudo install -m755 /tmp/resvg /usr/local/bin/resvg
+```
+
+macOS:
+
+```bash
+brew install inkscape imagemagick resvg
+```
+
+Check what got picked up:
+
+```bash
+$ skills/svg-logo-maker/scripts/render.sh examples/self/logos/final.svg /tmp/out 512
+  final-512.png                6103 bytes
+rendered with: resvg
+```
 
 ## Scripts
 
@@ -110,7 +167,25 @@ primitives and says where its ceiling is.
 separation happens in a vector editor against the printer's profile, and
 `print.sh` says so instead of pretending.
 
+## Contributing
+
+Pull requests are welcome and [`CONTRIBUTING.md`](CONTRIBUTING.md) is worth
+reading first, because two of its rules are unusual: a design rule has to name
+how it is checked, and a metric has to name what it does not measure. Both of
+this repository's metrics were wrong on the first attempt in exactly that
+second way.
+
+Anyone can review and approve a pull request. Merging is the maintainer's, the
+merge is always a squash, and one pull request is one commit is one PATCH.
+
+## Versioning
+
+[WendtVer](https://wendtver.org) — the version is the commit count, computed by
+`scripts/version.sh` and enforced by CI rather than maintained by hand. Every
+merge to `main` tags a release. [`CHANGELOG.md`](CHANGELOG.md) says what moved.
+
 ## Licence
 
 MIT. Prior art and licence status of the skills surveyed:
-[`NOTICE.md`](NOTICE.md).
+[`NOTICE.md`](NOTICE.md). Conduct: [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md).
+Vulnerabilities: [`SECURITY.md`](SECURITY.md).
