@@ -27,7 +27,11 @@
 - **`CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, issue and pull
   request templates** added.
 
-## 0.0.1 — initial release
+## Before 0.0.2 — the initial commit, never released
+
+Kept for the record rather than as a release. That commit carried `0.1.0`, a
+number written by hand, and no release job existed yet to tag it. **v0.0.2 is
+the first release** and contains everything below.
 
 - **The skill**, five style modules and ten checkable invariants, written from
   scratch: the two strongest prior skills ship no licence file, so nothing could
