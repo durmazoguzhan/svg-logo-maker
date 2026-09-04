@@ -1,5 +1,56 @@
 # Changelog
 
+## 0.0.4 — colour, which the skill had been treating as a risk and never as a choice
+
+Found by using the skill on a second project. The review page put a near-black
+mark on a near-black plate, presented it as a colourway, and said nothing; the
+contrast there is 1.01:1.
+
+- **`references/colour.md`.** The skill mentioned colour only as something to
+  remove — do not let hue carry structure, turn the gradient off, test it in one
+  ink. Correct, and half the subject. `contrast`, `WCAG`, `luminance`,
+  `harmonious`, `complementary`, `analogous`, `triadic`, `monochromatic` and
+  `colour blind` appeared zero times in the whole skill. The module covers the
+  three questions that have answers, says why five of the seven classical
+  harmony schemes are solving an interface's problem rather than a logo's, and
+  ends with what the checks do not measure.
+- **`scripts/contrast.py`.** WCAG contrast for every ink against every surface
+  the brand named plus white, black and mid grey; a greyscale merge test, which
+  is not the one-colour test and catches a different failure; and the three
+  dichromacies, reported as the proportion of separation kept rather than
+  against an absolute floor, because a pair that falls from dE 109 to 13 has
+  lost everything while clearing any floor worth setting.
+- **`scripts/gamut.py`.** Whether a press can reach the colour at all, which no
+  other check here can see. Round-trips through a CMYK profile and reports
+  CIEDE2000. `--find` holds the hue and walks the chroma to the boundary, so a
+  failing colour gets located rather than desaturated. Skips with an install
+  hint when `transicc` is absent.
+- **A new invariant, at 2, and everything below it renumbered.** Contrast and
+  gamut are the sibling of "the mark survives one colour" and belong beside it.
+  The one reference to a moved number, in `examples/self/README.md`, moved with
+  it.
+- **`preview.py` reports contrast per card and adds a mid-grey band.** The dark
+  panel now says what it is: the full-colour file on a dark plate, which is what
+  a reader without the reversed variant will do, with the number that explains
+  why `mono-light` exists. Mid grey is there because a mark that clears white
+  and black can still fail it, and nobody previews it.
+- **Outline before variants, in `SKILL.md` and in CI.** The documented order ran
+  `variants.py` on the live-text master and `print.sh` last, so every delivered
+  digital SVG carried live text and `check.py` failed all of them. The skill's
+  own linter was rejecting the skill's own output. CI now runs the corrected
+  order and lints what it produced.
+- **CI installs `liblcms2-utils`, `icc-profiles-free` and `ghostscript`**, so the
+  measured path runs there rather than the skip path, and gates on two controls:
+  a colour known to be out of gamut has to be caught, and a luminance-matched
+  red and green have to be reported as merging.
+
+## 0.0.3 — the changelog stopped claiming a release that never happened
+
+- The initial commit shipped a hand-written `0.1.0` and was never tagged. The
+  entry that described it as `0.0.1` was describing a release that does not
+  exist. This entry exists because 0.0.3 was itself missing from the file until
+  0.0.4 went to write above it.
+
 ## 0.0.2 — governance, versioning and a manifest fix
 
 - **WendtVer, derived from the commit count.** `scripts/version.sh` computes the

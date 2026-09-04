@@ -20,7 +20,8 @@ jobs:
       - name: Install the toolchain
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y --no-install-recommends inkscape imagemagick fontconfig
+          sudo apt-get install -y --no-install-recommends \
+            inkscape imagemagick fontconfig liblcms2-utils icc-profiles-free ghostscript
           curl -sL -o /tmp/resvg.tar.gz \
             https://github.com/linebender/resvg/releases/download/v0.48.1/resvg-linux-x86_64.tar.gz
           tar xzf /tmp/resvg.tar.gz -C /tmp
@@ -56,17 +57,41 @@ jobs:
         run: |
           S=skills/svg-logo-maker/scripts
           out=$(mktemp -d)
-          python3 $S/variants.py     examples/self/logos/final.svg "$out/digital" --bg
-          python3 $S/icon-extract.py examples/self/logos/final.svg "$out/digital/icon.svg"
+          # Outline first and deliver from the outlined file. The other order
+          # ships live text in every digital SVG, which check.py then fails.
+          bash    $S/outline.sh      examples/self/logos/final.svg "$out/outlined.svg"
+          python3 $S/variants.py     "$out/outlined.svg" "$out/digital" --bg
+          python3 $S/icon-extract.py "$out/outlined.svg" "$out/digital/icon.svg"
           bash    $S/render.sh       "$out/digital/icon.svg" "$out/digital" 16 32 512
           bash    $S/ico.sh          "$out/digital/icon.svg" "$out/digital/favicon.ico"
-          bash    $S/outline.sh      examples/self/logos/final.svg "$out/outlined.svg"
           bash    $S/legibility.sh   examples/self/logos/final-icon.svg
           bash    $S/print.sh        examples/self/logos/final.svg "$out/print"
           python3 $S/preview.py      examples/self/logos/concepts --out "$out/preview.html"
           test -s "$out/digital/favicon.ico"
           test -s "$out/print/final.pdf"
           test "$(grep -c '<text' "$out/outlined.svg")" -eq 0
+          # What the corrected order buys: nothing shipped carries live text.
+          python3 $S/check.py --favicon-size 16 "$out"/digital/*.svg
+
+      - name: Colour is measured, not asserted
+        run: |
+          S=skills/svg-logo-maker/scripts
+          # transicc and the profiles are installed above, so the full path runs
+          # here rather than the skip path a developer machine might take.
+          command -v transicc
+          python3 $S/gamut.py '#C8442A' --find | tee /tmp/gamut.txt
+          grep -q 'SHIFTS' /tmp/gamut.txt
+          grep -q 'inside the gamut' /tmp/gamut.txt
+          # A pair separated only by hue has to be caught, or the check is
+          # decoration: these two are matched in luminance on purpose.
+          printf '%s' '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+            <rect x="96" y="160" width="150" height="192" fill="#D62828"/>
+            <rect x="266" y="160" width="150" height="192" fill="#1E803C"/></svg>' > /tmp/hue.svg
+          python3 $S/contrast.py /tmp/hue.svg --bg '#FAF7F2' | tee /tmp/hue.txt
+          grep -q 'merge in greyscale' /tmp/hue.txt
+          grep -q 'protanopia.*converge' /tmp/hue.txt
+          # And a sound palette has to come back clean, or it warns on everything.
+          python3 $S/contrast.py examples/self/logos/final-icon.svg --bg '#FFFFFF'
 
       # On main the version is fully determined: it is the commit count in
       # WendtVer form, so it can be recomputed and compared exactly.
