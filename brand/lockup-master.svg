@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1366 296">
+  <title>svg-logo-maker</title>
+  <!-- Icon height is two cap heights, the gap to the wordmark is one, and the
+       icon's box was measured by rendering rather than derived from the arc,
+       because a stroked path's bounds are not its geometry's. -->
+  <g id="icon" transform="translate(14.11, 14.11) scale(0.52364)">
+      <path id="ring" d="M 389.5 309.9 A 144 144 0 1 1 389.5 202.1"
+          fill="none" stroke="#14171A" stroke-width="64" stroke-linecap="butt"/>
+      <rect id="held" x="368" y="232" width="64" height="48" rx="10" fill="#108864"/>
+  </g>
+  <text id="wordmark" x="330.05" y="184.67" font-family="Lato"
+        font-weight="700" font-size="128" fill="#14171A">svg-logo-maker</text>
+</svg>
