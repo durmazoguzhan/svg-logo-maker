@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <title>svg-logo-maker</title>
+  <g id="icon">
+    <!-- A regular series interrupted once, and the interruption is the idea, so
+         it is 44 degrees rather than a slip. The bar sits inside the gap with
+         clearance above and below: a margin nobody measured is a margin being
+         guessed at, and this skill's whole argument is against that.
+         Sweep is 1, not 0. With 0 the arc is computed round the far centre and
+         the ring leaves the canvas, which is what the first version did. -->
+    <path id="ring" d="M 389.5 309.9 A 144 144 0 1 1 389.5 202.1"
+          fill="none" stroke="#14171A" stroke-width="64" stroke-linecap="butt"/>
+    <rect id="held" x="368" y="232" width="64" height="48" rx="10" fill="#108864"/>
+  </g>
+</svg>

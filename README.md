@@ -1,4 +1,9 @@
-# svg-logo-maker
+<h1>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="brand/logo-dark.png">
+    <img alt="svg-logo-maker" src="brand/logo.png" width="460">
+  </picture>
+</h1>
 
 A Claude Code skill that designs logos as hand-written SVG and delivers the
 whole asset set: colour variants, a square icon, favicons, a real
@@ -186,6 +191,16 @@ merge is always a squash, and one pull request is one commit is one PATCH.
 [WendtVer](https://wendtver.org) — the version is the commit count, computed by
 `scripts/version.sh` and enforced by CI rather than maintained by hand. Every
 merge to `main` tags a release. [`CHANGELOG.md`](CHANGELOG.md) says what moved.
+
+## Brand
+
+`brand/` holds the logo, its variants and `brand/guidelines.md`. The mark is a
+regular form interrupted once, with the interruption measured — which is what
+this skill argues a design rule has to be.
+
+It was drawn with the scripts in this repository, so every number in the
+guidelines is checkable here. `examples/self/` is a separate thing: a worked
+example under a different product name, kept as a record of one run.
 
 ## Licence
 

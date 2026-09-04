@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <title>svg-logo-maker avatar</title>
+  <!-- Full bleed, no rounded corners: GitHub crops this to a circle and a
+       rounded square inside a circle reads as a mistake. The mark's own box is
+       352 in a 512 field, so a circle crop keeps all of it. -->
+  <rect id="plate" width="512" height="512" fill="#14171A"/>
+  <g id="icon">
+    <path id="ring" d="M 389.5 309.9 A 144 144 0 1 1 389.5 202.1"
+          fill="none" stroke="#FAF7F2" stroke-width="64" stroke-linecap="butt"/>
+    <rect id="held" x="368" y="232" width="64" height="48" rx="10" fill="#108864"/>
+  </g>
+</svg>

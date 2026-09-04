@@ -1,6 +1,6 @@
 {
   "name": "svg-logo-maker",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Design logos as hand-written SVG and deliver the whole set: colour variants, favicons, .ico, and a print handoff with text converted to paths. No API keys.",
   "author": {
     "name": "Oguzhan Durmaz",

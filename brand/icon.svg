@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="41.261 41.258 213.809 213.809"><defs id="defs12" />
+  <title id="title2">svg-logo-maker</title>
+  
+  <g id="icon" transform="matrix(0.52364,0,0,0.52364,14.11,14.11)">
+    <path id="ring" d="m 389.5,309.9 a 144,144 0 1 1 0,-107.8" fill="none" stroke="#14171a" stroke-width="64" stroke-linecap="butt" />
+    <path id="held" style="fill:#108864" d="m 378,232 h 44 c 5.54,0 10,4.46 10,10 v 28 c 0,5.54 -4.46,10 -10,10 h -44 c -5.54,0 -10,-4.46 -10,-10 v -28 c 0,-5.54 4.46,-10 10,-10 z" />
+  </g>
+  </svg>
