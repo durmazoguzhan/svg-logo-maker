@@ -46,6 +46,10 @@ PAGE = """<!DOCTYPE html>
   .art img {{ max-width:100%; max-height:150px; }}
   .art.light {{ background:#fff; }}
   .art.dark {{ background:#101820; }}
+  .art.grey {{ background:#808080; }}
+  .badge {{ float:right; font-family:ui-sans-serif,system-ui,sans-serif; }}
+  .badge.ok {{ color:#15803d; }}
+  .badge.bad {{ color:#b91c1c; font-weight:600; }}
   .label {{ padding:.5rem .75rem; font-size:.8rem; color:var(--muted); border-top:1px solid var(--line);
             font-family:ui-monospace,SFMono-Regular,Menlo,monospace; }}
   .strip {{ display:flex; flex-wrap:wrap; gap:2rem; align-items:flex-end;
@@ -65,14 +69,48 @@ PAGE = """<!DOCTYPE html>
 """
 
 
-def cards(files, base, klass):
+NON_TEXT_FLOOR = 3.0
+
+
+def badge(path, bg_hex):
+    """What the mark's weakest ink scores against the surface behind it.
+
+    Without this the dark panel is a trap: a near-black mark dropped on a
+    near-black plate renders as the accent floating alone, and the page
+    presents that as a legitimate colourway instead of as the reason the
+    reversed variant exists."""
+    if not bg_hex:
+        return ""
+    try:
+        sys.path.insert(0, HERE)
+        from contrast import collect_inks, contrast, parse_colour, hexof
+    except ImportError:
+        return ""
+    bg = parse_colour(bg_hex)
+    got = collect_inks(path)
+    if bg is None or not got:
+        return ""
+    inks, plate = got
+    marks = [i for i in inks if i != plate]
+    if not marks:
+        return ""
+    worst = min(contrast(i, bg) for i in marks)
+    weak = hexof(min(marks, key=lambda i: contrast(i, bg)))
+    if worst < NON_TEXT_FLOOR:
+        return (f'<span class="badge bad" title="{weak} on {bg_hex}">'
+                f"{worst:.2f}:1 &#10007;</span>")
+    return f'<span class="badge ok">{worst:.2f}:1</span>'
+
+
+def cards(files, base, klass, bg_hex=None):
     out = []
     for path, label in files:
         rel = os.path.relpath(path, base)
         out.append(
             f'<div class="card"><div class="art {klass}">'
             f'<img src="{html.escape(rel)}" alt="{html.escape(label)}"></div>'
-            f'<div class="label">{html.escape(label)}</div></div>')
+            f'<div class="label">{badge(path, bg_hex)}'
+            f"{html.escape(label)}</div></div>")
     return '<div class="grid">' + "".join(out) + "</div>"
 
 
@@ -123,8 +161,24 @@ def main():
                 bucket.append((p, f"{label} · {suffix}"))
 
     sections = [
-        "<h2>Concepts on light</h2>", cards(originals, base, "light"),
-        "<h2>Concepts on dark</h2>", cards(originals, base, "dark"),
+        "<h2>Concepts on light</h2>",
+        '<p class="note">Each badge is the weakest ink of that file '
+        "against the surface behind it. 3:1 is the floor for a graphic.</p>",
+        cards(originals, base, "light", "#FFFFFF"),
+        "<h2>The same files on dark</h2>",
+        '<p class="note">This is not the dark-mode variant. It is the '
+        "full-colour file dropped on a dark plate, which is what a reader who "
+        "has not been given the reversed variant will do. A red badge here is "
+        "the expected result for a dark mark, and it is the reason "
+        "<code>mono-light</code> exists — not something to fix in the "
+        "drawing.</p>",
+        cards(originals, base, "dark", "#101820"),
+        "<h2>The same files on mid grey</h2>",
+        '<p class="note">The surface nobody previews. A mark that clears white '
+        "and black can still fail here, because clearing 3:1 against #808080 "
+        "needs luminance above 0.747 or below 0.039 — no saturated mid-tone "
+        "passes. Read a failure as which variant that surface gets.</p>",
+        cards(originals, base, "grey", "#808080"),
         "<h2>One colour, dark ink on white</h2>",
         '<p class="note">This is what a single-plate print, an engraving and a '
         "favicon at 16px all get. A mark that only works in colour fails here "

@@ -28,7 +28,38 @@ them. Put a gap in, or overlap them and knock one out.
 
 ---
 
-## 2. Nothing important is thinner than one device pixel at the smallest size
+## 2. Every ink clears what it sits on, and the press can reach it
+
+Two questions, both arithmetic, both routinely skipped because colour feels
+like the part where taste applies.
+
+**Clearance.** A logo is a graphical object, so 3:1 against every approved
+surface. A wordmark is read rather than seen, so 4.5:1. Test white, black and
+mid grey as well as the brand's own surfaces, because a mark meets those
+whether or not anyone chose them.
+
+**Reach.** sRGB is larger than four-colour process exactly where brand colours
+get picked — saturated oranges, vivid reds, bright greens. A colour outside the
+gamut is not approximated, it is unstable: it moves between presses and its
+spot version never agrees with its process version.
+
+**Check:** `scripts/contrast.py logo.svg --bg '#PAPER,#PLATE'` for the first,
+`scripts/gamut.py '#ACCENT'` for the second. Both name what failed and against
+what.
+
+**When a colour cannot be reached, hold the hue and walk the chroma down to the
+boundary** (`gamut.py --find`) rather than desaturating until the warnings
+stop. Lightness usually survives that walk, so the mark's balance does not
+change. A near-black is the exception and it is not a fault: no press reaches
+screen black, and the answer is to specify the build — 100% K for thin
+elements, rich black for solids — not to lighten the ink.
+
+`references/colour.md` has the whole of it, including why five of the seven
+classical harmony schemes are solving a problem a logo does not have.
+
+---
+
+## 3. Nothing important is thinner than one device pixel at the smallest size
 
 A stroke is a line until it drops under a pixel, and then it is a grey
 suggestion. Work it out rather than squinting at it: at a 512 viewBox rendered
@@ -43,7 +74,7 @@ simplified small variant and say where the cutover is.
 
 ---
 
-## 3. Every mark has one place the eye lands first
+## 4. Every mark has one place the eye lands first
 
 Two elements of equal visual weight make the reader choose, and they will
 choose differently each time, which is the opposite of a logo.
@@ -58,7 +89,7 @@ as the focus, because solidity beats area.
 
 ---
 
-## 4. The empty space is drawn, not left over
+## 5. The empty space is drawn, not left over
 
 Negative space is a shape and it has to be as deliberate as the ink. Gaps
 between elements should look chosen: equal where they mean equal, and clearly
@@ -71,7 +102,7 @@ obviously different.
 
 ---
 
-## 5. The construction is regular even when the result is not
+## 6. The construction is regular even when the result is not
 
 Pick a unit and hold it. Coordinates on a grid, radii in a small set, angles
 from a small set, strokes from a small set. A mark built from 3, 6 and 12 with
@@ -87,7 +118,7 @@ than a mirror.
 
 ---
 
-## 6. It looks like itself and not like something else
+## 7. It looks like itself and not like something else
 
 Two failures here. Resembling an existing brand is the loud one. The quiet one
 is resembling the category: every AI company with a hexagon and a node graph,
@@ -99,7 +130,7 @@ category badge, not an identity.
 
 ---
 
-## 7. The file is editable by whoever comes next
+## 8. The file is editable by whoever comes next
 
 Groups carry ids. Repeated elements come from `<defs>` and `<use>`. Numbers
 have as few decimals as the drawing needs. Nobody should have to reverse
@@ -111,7 +142,7 @@ neither you nor anyone else will edit it.
 
 ---
 
-## 8. The file carries nothing it cannot carry with it
+## 9. The file carries nothing it cannot carry with it
 
 No external font, no `@import`, no linked image, no `<use href="other.svg#x">`.
 A logo lands on machines you will never see.
@@ -122,7 +153,7 @@ resolves, which is a different logo.
 
 ---
 
-## 9. Text becomes paths before it leaves
+## 10. Text becomes paths before it leaves
 
 Delivery only. Keep the live-text version as your editable master, because a
 wordmark you cannot retype is a wordmark you cannot fix.
@@ -138,7 +169,7 @@ before it becomes a trademark.
 
 ---
 
-## 10. The set is delivered, not the file
+## 11. The set is delivered, not the file
 
 One SVG is not a logo, it is one view of one. What ships:
 
@@ -157,8 +188,8 @@ One SVG is not a logo, it is one view of one. What ships:
 ## How to use these while designing
 
 Run them as a gate, not as inspiration. Draw first, then walk the list. Rules
-1, 2 and 8 have scripts and take seconds. Rules 3, 4, 5 and 6 need a person and
-are where the actual judgement is.
+1, 2, 3 and 9 have scripts and take seconds. Rules 4, 5, 6 and 7 need a person
+and are where the actual judgement is.
 
-If a design fails 3 or 6, start again. Those are decisions about what the mark
+If a design fails 4 or 7, start again. Those are decisions about what the mark
 *is*, and no amount of adjusting stroke weights repairs them.

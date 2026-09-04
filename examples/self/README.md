@@ -21,7 +21,7 @@ Three directions, not three tints of one direction:
 
 All three passed the checks, so the choice was about the idea rather than the
 measurements. Concept 1 won because the rationale is about what the thing does:
-one drawing, several sizes. That is invariant 6 doing its job — the sentence
+one drawing, several sizes. That is invariant 7 doing its job — the sentence
 "three shapes descending" would have fitted twenty other companies.
 
 ## Iterations, and what each one fixed

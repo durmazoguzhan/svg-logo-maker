@@ -25,9 +25,9 @@ is an opinion until something renders it at 16px and reports a number.
 
     1  Brief      what it is for, which style, what it must survive
     2  Explore    3 to 5 genuinely different concepts, as files
-    3  Measure    lint + one-colour test + size test, then a review page
+    3  Measure    lint, colour, one-colour test, size test, then a review page
     4  Refine     iterate on one direction, ids stable so changes are traceable
-    5  Deliver    variants, icon, favicons, .ico, print handoff, guidelines
+    5  Deliver    outline, variants, icon, favicons, .ico, print, guidelines
 
 Do not skip 3. It is the step that separates this from generating five SVGs and
 hoping.
@@ -64,7 +64,10 @@ usually the right answer even when they came asking for a symbol.
 
 **Colour.** Existing palette, a described mood, or your choice. Ask for the
 darkest background the logo will sit on, because that decides the reversed
-variant.
+variant. **Ask whether it will ever be printed**, because that decides whether
+the accent has to live inside the CMYK gamut, and it is much cheaper to know
+now than after someone has learned the colour. `references/colour.md` has the
+rest, and it is the module people skip.
 
 **Where it has to survive.** Favicon, app icon, embroidery, signage, one-colour
 print, laser engraving. This sets the constraints and it is the question nobody
@@ -111,15 +114,25 @@ agents do not share context.
 
 ## 3. Measure
 
-Run all three. They take seconds and they catch what looking at a grid does not.
+Run all of them. They take seconds and they catch what looking at a grid does
+not.
 
-    python3 scripts/check.py --favicon-size 16 logos/concepts/*.svg
-    scripts/legibility.sh logos/concepts/concept-1.svg
-    python3 scripts/preview.py logos/concepts/ --title "Concepts"
+    python3 scripts/check.py     --favicon-size 16 logos/concepts/*.svg
+    python3 scripts/contrast.py  logos/concepts/*.svg --bg '#PAPER,#PLATE'
+    python3 scripts/gamut.py     '#INK' '#ACCENT' --find
+    scripts/legibility.sh        logos/concepts/concept-1.svg
+    python3 scripts/preview.py   logos/concepts/ --title "Concepts"
 
 `check.py` is a gate: external references, embedded bitmaps, live text at
 delivery time, a missing viewBox and a stroke that vanishes at 16px are all
 reported, and it exits non-zero on the errors.
+
+`contrast.py` and `gamut.py` measure the palette rather than the drawing, so
+they run once for the set unless the concepts disagree about colour. The first
+asks whether every ink clears its background and whether the pair survives
+greyscale and dichromacy; the second asks whether a press can reach the colour
+at all, which nothing else here can see. Read `references/colour.md` before
+acting on either.
 
 `legibility.sh` reports two numbers per concept. *Structure kept in one colour*
 below 0.25 means colour is doing the work. *Detail loss* at 16px says whether
@@ -165,11 +178,17 @@ stroke that got thinner during refinement is easier to catch now.
 
 ## 5. Deliver
 
-    python3 scripts/variants.py  logos/final.svg  out/digital/ --bg
-    python3 scripts/icon-extract.py logos/final.svg out/digital/icon.svg
-    scripts/render.sh out/digital/logo-full.svg out/digital/
+    scripts/outline.sh logos/final.svg logos/final-outlined.svg
+    python3 scripts/variants.py     logos/final-outlined.svg out/digital/ --bg
+    python3 scripts/icon-extract.py logos/final-outlined.svg out/digital/icon.svg
+    scripts/render.sh out/digital/final-outlined-full.svg out/digital/
     scripts/ico.sh    out/digital/icon.svg out/digital/favicon.ico
     scripts/print.sh  logos/final.svg out/print/
+
+**Outline first, and deliver from the outlined file.** Running `variants.py`
+on the live-text master puts live text into every digital SVG that ships, and
+`check.py` fails all of them — invariant 10 is not a print-only rule. The
+master keeps its live text and stays out of `out/`.
 
 That produces the colour variants, the extracted square icon, the PNG ladder
 from 16 to 2048, a real multi-resolution `.ico`, and the outlined SVG plus PDF
@@ -205,6 +224,7 @@ what a missing tool costs.
 | Inkscape | text-to-path, PDF, EPS, icon extraction | scripts refuse and say why, rather than shipping live text |
 | ImageMagick | `.ico`, the legibility measurements | those two features only |
 | fontconfig | the font-substitution audit | outlining proceeds unaudited |
+| liblcms2-utils | the CMYK gamut check | `gamut.py` says so and skips; contrast is unaffected |
 
 resvg is the lightest: one 4.6 MB binary from
 `github.com/linebender/resvg/releases`, no dependencies. Install Inkscape as

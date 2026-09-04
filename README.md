@@ -116,11 +116,12 @@ The scripts detect what exists and say what a missing one costs.
 | **Inkscape** | text-to-path, PDF, EPS, icon extraction | those four refuse and say why, rather than shipping live text to a printer |
 | **ImageMagick** | `.ico`, and the legibility measurements | those two features only |
 | **fontconfig** | the font-substitution audit | outlining proceeds unaudited |
+| **liblcms2-utils** | the CMYK gamut check, so a brand colour is not discovered to be unprintable at print time | `gamut.py` says what is missing and skips; contrast and legibility are unaffected |
 
 Debian or Ubuntu:
 
 ```bash
-sudo apt-get install -y inkscape imagemagick
+sudo apt-get install -y inkscape imagemagick liblcms2-utils icc-profiles-free
 curl -sL https://github.com/linebender/resvg/releases/latest/download/resvg-linux-x86_64.tar.gz \
   | tar xz -C /tmp && sudo install -m755 /tmp/resvg /usr/local/bin/resvg
 ```
@@ -128,7 +129,7 @@ curl -sL https://github.com/linebender/resvg/releases/latest/download/resvg-linu
 macOS:
 
 ```bash
-brew install inkscape imagemagick resvg
+brew install inkscape imagemagick resvg little-cms2
 ```
 
 Check what got picked up:
@@ -146,6 +147,8 @@ Each runs standalone, so they are useful outside the skill too.
 | Script | Does |
 |---|---|
 | `check.py` | lint an SVG logo; exits non-zero on errors |
+| `contrast.py` | WCAG contrast against every surface, greyscale merge, and the three dichromacies |
+| `gamut.py` | whether a press can reach the colour; `--find` walks the chroma to the boundary |
 | `legibility.sh` | one-colour dependence and detail loss at small sizes |
 | `variants.py` | full colour, one-colour dark, one-colour light, plated |
 | `icon-extract.py` | lift `<g id="icon">` into a standalone square SVG |
@@ -153,7 +156,7 @@ Each runs standalone, so they are useful outside the skill too.
 | `ico.sh` | multi-resolution `.ico` from a square SVG |
 | `outline.sh` | text to paths, with the font audit first |
 | `print.sh` | outlined SVG + PDF + EPS, and what stays manual |
-| `preview.py` | review page: light, dark, one-colour, favicon strip |
+| `preview.py` | review page: light, dark, mid grey, one-colour, favicon strip, with contrast per card |
 
 ## What it will not do
 
